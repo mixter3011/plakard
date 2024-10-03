@@ -69,6 +69,17 @@ flutter:
     - lib/assets/images/maths.png
     - lib/assets/images/science.png
     - lib/assets/images/cs.png
+    - lib/assets/images/algebra.png
+    - lib/assets/images/calculus.png
+    - lib/assets/images/geometry.png
+    - lib/assets/images/stats.png
+    - lib/assets/images/complex.png
+    - lib/assets/images/matalg.png
+    - lib/assets/images/set.png
+    - lib/assets/images/trigo.png
+    - lib/assets/images/physics.png
+    - lib/assets/images/chemistry.png
+    - lib/assets/images/biology.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

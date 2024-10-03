@@ -79,7 +79,10 @@ class CarouselItem extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CardSelection(title: mainHeading),
+                        builder: (context) => CardSelection(
+                          title: mainHeading,
+                          topic: mainHeading,
+                        ),
                       ),
                     );
                   },
