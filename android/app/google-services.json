@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "506657595872",
+    "project_id": "plakard-f09b1",
+    "storage_bucket": "plakard-f09b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506657595872:android:be27bacd981b8bebedcb85",
+        "android_client_info": {
+          "package_name": "com.example.plakard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjELzQjZt-tyIfa9FB_ph75oNMQOpTKh4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

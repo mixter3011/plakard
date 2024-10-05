@@ -41,22 +41,12 @@ class _CardSelectionState extends State<CardSelection> {
         ];
       case 'SCIENCE':
         return [
-          TopicData('lib/assets/images/biology.png', 'ALGEBRA',
+          TopicData('lib/assets/images/biology.png', 'BIOLOGY',
               'Essential DBMS Questions!', 24),
-          TopicData('lib/assets/images/chemistry.png', 'CALCULUS',
+          TopicData('lib/assets/images/physics.png', 'PHYSICS',
               'Important Networking Concepts!', 15),
-          TopicData('lib/assets/images/geometry.png', 'GEOMETRY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/stats.png', 'STATS & PROBABILITY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/set.png', 'SET THEORY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/complex.png', 'COMPLEX NUMBERS',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/matalg.png', 'MATRIX ALGEBRA',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/trigo.png', 'TRIGNOMETRY',
-              'Key OOP Questions!', 18),
+          TopicData('lib/assets/images/chemistry.png', 'CHEMISTRY',
+              'Key OOP Questions!', 18)
         ];
 
       default:

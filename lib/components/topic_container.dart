@@ -76,7 +76,7 @@ class TopicContainer extends StatelessWidget {
                       subLine,
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.normal,
-                        fontSize: 16,
+                        fontSize: 12,
                         color: Colors.white,
                       ),
                     ),

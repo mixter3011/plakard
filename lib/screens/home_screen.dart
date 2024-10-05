@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plakard/components/drawer.dart';
 import 'package:plakard/components/topic_container.dart';
 import 'package:plakard/components/carousel_item.dart';
@@ -14,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Hi,Sen!",
+                  "Hi, Sen!",
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     color: Colors.black,
@@ -77,71 +80,110 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                CarouselSlider(
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    enlargeCenterPage: true,
-                    enableInfiniteScroll: true,
-                    height: 380,
-                  ),
-                  items: const [
-                    CarouselItem(
-                      imagePath: 'lib/assets/images/maths.png',
-                      mainHeading: 'MATHEMATICS',
-                      numOfCards: 24,
-                    ),
-                    CarouselItem(
-                      imagePath: 'lib/assets/images/science.png',
-                      mainHeading: 'SCIENCE',
-                      numOfCards: 15,
-                    ),
-                    CarouselItem(
-                      imagePath: 'lib/assets/images/cs.png',
-                      mainHeading: 'COMPUTER SCIENCE',
-                      numOfCards: 18,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "EXPLORE MORE",
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Column(
-                  children: [
-                    TopicContainer(
-                      imagePath: 'lib/assets/images/dbms-white.png',
-                      mainHeading: 'DBMS',
-                      subLine: 'Essential DBMS Questions!',
-                      numOfCards: 24,
-                    ),
-                    SizedBox(height: 10),
-                    TopicContainer(
-                      imagePath: 'lib/assets/images/Networks.png',
-                      mainHeading: 'NETWORKS',
-                      subLine: 'Important Networking Concepts!',
-                      numOfCards: 15,
-                    ),
-                    SizedBox(height: 10),
-                    TopicContainer(
-                      imagePath:
-                          'lib/assets/images/Object oriented programming.png',
-                      mainHeading: 'OOP',
-                      subLine: 'Key OOP Questions!',
-                      numOfCards: 18,
-                    ),
-                    SizedBox(height: 10),
-                    TopicContainer(
-                      imagePath: 'lib/assets/images/Data structure diagram.png',
-                      mainHeading: 'DATA STRUCTURES',
-                      subLine: 'Essential DS Questions!',
-                      numOfCards: 30,
-                    ),
-                  ],
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore.collection('categories').snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text("Something went wrong");
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasData) {
+                      var categories = snapshot.data!.docs;
+
+                      var carouselCategories = categories.where((category) {
+                        var data = category.data() as Map<String, dynamic>;
+                        String name = data['name'] ?? 'Unknown';
+                        return name == 'MATHEMATICS' ||
+                            name == 'COMPUTER SCIENCE' ||
+                            name == 'SCIENCE';
+                      }).toList();
+
+                      var exploreMoreCategories = categories.where((category) {
+                        var data = category.data() as Map<String, dynamic>;
+                        String name = data['name'] ?? 'Unknown';
+                        return name != 'MATHEMATICS' &&
+                            name != 'COMPUTER SCIENCE' &&
+                            name != 'SCIENCE';
+                      }).toList();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CarouselSlider(
+                            options: CarouselOptions(
+                              autoPlay: true,
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: true,
+                              height: 380,
+                            ),
+                            items: carouselCategories.map((category) {
+                              var data =
+                                  category.data() as Map<String, dynamic>;
+
+                              int numOfTopics = data['topics'] is String
+                                  ? int.tryParse(data['topics']) ?? 0
+                                  : (data['topics'] ?? 0);
+
+                              String logo = data['logo'] ??
+                                  'lib/assets/images/default.png';
+                              String name = data['name'] ?? 'Unknown Category';
+
+                              return CarouselItem(
+                                imagePath: logo,
+                                mainHeading: name,
+                                numOfCards: numOfTopics,
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            "EXPLORE MORE",
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Column(
+                            children: exploreMoreCategories.map((category) {
+                              var data =
+                                  category.data() as Map<String, dynamic>;
+
+                              int numOfTopics = data['topics'] is String
+                                  ? int.tryParse(data['topics']) ?? 0
+                                  : (data['topics'] ?? 0);
+
+                              String name = (data['name'] ?? 'Unknown Category')
+                                  .toString()
+                                  .toLowerCase();
+
+                              String logo = data['logo'] ??
+                                  'lib/assets/images/default.png';
+
+                              String subLine = "Learn the essentials of $name";
+
+                              return Column(
+                                children: [
+                                  TopicContainer(
+                                    imagePath: logo,
+                                    mainHeading: name,
+                                    subLine: subLine,
+                                    numOfCards: numOfTopics,
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      );
+                    }
+                    return const Text("No categories available");
+                  },
                 ),
               ],
             ),
