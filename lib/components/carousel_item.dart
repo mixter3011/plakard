@@ -65,7 +65,7 @@ class CarouselItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "CARDS: $numOfCards",
+                      "TOPICS: $numOfCards",
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.white,

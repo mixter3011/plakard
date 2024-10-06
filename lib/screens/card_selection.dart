@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:plakard/components/topic_container.dart';
 import 'package:plakard/components/profile_pic.dart';
@@ -18,46 +19,49 @@ class CardSelection extends StatefulWidget {
 }
 
 class _CardSelectionState extends State<CardSelection> {
-  List<TopicData> getTopicsForSelected() {
-    switch (widget.topic) {
-      case 'MATHEMATICS':
-        return [
-          TopicData('lib/assets/images/algebra.png', 'ALGEBRA',
-              'Essential DBMS Questions!', 24),
-          TopicData('lib/assets/images/calculus.png', 'CALCULUS',
-              'Important Networking Concepts!', 15),
-          TopicData('lib/assets/images/geometry.png', 'GEOMETRY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/stats.png', 'STATS & PROBABILITY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/set.png', 'SET THEORY',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/complex.png', 'COMPLEX NUMBERS',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/matalg.png', 'MATRIX ALGEBRA',
-              'Key OOP Questions!', 18),
-          TopicData('lib/assets/images/trigo.png', 'TRIGNOMETRY',
-              'Key OOP Questions!', 18),
-        ];
-      case 'SCIENCE':
-        return [
-          TopicData('lib/assets/images/biology.png', 'BIOLOGY',
-              'Essential DBMS Questions!', 24),
-          TopicData('lib/assets/images/physics.png', 'PHYSICS',
-              'Important Networking Concepts!', 15),
-          TopicData('lib/assets/images/chemistry.png', 'CHEMISTRY',
-              'Key OOP Questions!', 18)
-        ];
+  Future<List<TopicData>> getTopicsForSelected() async {
+    List<TopicData> topics = [];
 
-      default:
-        return [];
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .doc(widget.topic)
+          .collection('topics')
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        print('No topics found in Firestore.');
+      }
+
+      for (var doc in snapshot.docs) {
+        var data = doc.data();
+
+        if (data.containsKey('logo') &&
+            data.containsKey('subline') &&
+            data.containsKey('number')) {
+          topics.add(
+            TopicData(
+              data['logo'],
+              doc.id.toUpperCase(),
+              data['subline'],
+              data['number'],
+            ),
+          );
+        } else {
+          print("Document missing some required fields: ${doc.id}");
+        }
+      }
+
+      print("Total topics fetched: ${topics.length}");
+    } catch (e) {
+      print('Error fetching topics: $e');
     }
+
+    return topics;
   }
 
   @override
   Widget build(BuildContext context) {
-    final topics = getTopicsForSelected();
-
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: const MyDrawer(),
@@ -89,25 +93,44 @@ class _CardSelectionState extends State<CardSelection> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: topics.map((topic) {
-              return Column(
-                children: [
-                  TopicContainer(
-                    imagePath: topic.imagePath,
-                    mainHeading: topic.mainHeading,
-                    subLine: topic.subLine,
-                    numOfCards: topic.numOfCards,
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              );
-            }).toList(),
-          ),
-        ),
+      body: FutureBuilder<List<TopicData>>(
+        future: getTopicsForSelected(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error fetching topics'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No topics available'));
+          }
+
+          final topics = snapshot.data!;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: topics.map((topic) {
+                  return Column(
+                    children: [
+                      TopicContainer(
+                        imagePath: topic.imagePath,
+                        mainHeading: topic.mainHeading,
+                        subLine: topic.subLine,
+                        numOfCards: topic.numOfCards,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

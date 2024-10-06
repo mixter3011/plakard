@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         var data = category.data() as Map<String, dynamic>;
                         String name = data['name'] ?? 'Unknown';
                         return name == 'MATHEMATICS' ||
-                            name == 'COMPUTER SCIENCE' ||
+                            name == 'LANGUAGES' ||
                             name == 'SCIENCE';
                       }).toList();
 
@@ -158,8 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   : (data['topics'] ?? 0);
 
                               String name = (data['name'] ?? 'Unknown Category')
-                                  .toString()
-                                  .toLowerCase();
+                                  .toString();
 
                               String logo = data['logo'] ??
                                   'lib/assets/images/default.png';
