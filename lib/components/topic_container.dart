@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:plakard/screens/flash_card.dart';
 
 class TopicContainer extends StatelessWidget {
   final String imagePath;
@@ -58,7 +59,12 @@ class TopicContainer extends StatelessWidget {
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const FlashCard()));
+                          },
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(

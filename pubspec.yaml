@@ -83,6 +83,15 @@ flutter:
     - lib/assets/images/chemistry.png
     - lib/assets/images/biology.png
     - lib/assets/images/default.png
+    - lib/assets/images/c.png
+    - lib/assets/images/cpp.png
+    - lib/assets/images/dart.png
+    - lib/assets/images/go.png
+    - lib/assets/images/html.png
+    - lib/assets/images/java.png
+    - lib/assets/images/js.png
+    - lib/assets/images/python.png
+    - lib/assets/images/ts.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

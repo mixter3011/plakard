@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         var data = category.data() as Map<String, dynamic>;
                         String name = data['name'] ?? 'Unknown';
                         return name == 'MATHEMATICS' ||
-                            name == 'LANGUAGES' ||
+                            name == 'COMPUTER SCIENCE' ||
                             name == 'SCIENCE';
                       }).toList();
 
