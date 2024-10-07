@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatefulWidget {
-  const CustomCard({super.key});
+  final String question;
+  final String answer;
+
+  const CustomCard({
+    Key? key,
+    required this.question,
+    required this.answer,
+  }) : super(key: key);
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -11,7 +18,8 @@ class _CustomCardState extends State<CustomCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _isTapped = false;
+
+  bool _flipped = false; // Track if the card is flipped
 
   @override
   void initState() {
@@ -20,60 +28,68 @@ class _CustomCardState extends State<CustomCard>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-
-    _animation = Tween<double>(begin: 0, end: 3.14).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _animateCard() {
+  void flipCard() {
+    if (_flipped) {
+      _controller.reverse();
+    } else {
+      _controller.forward();
+    }
     setState(() {
-      _isTapped = !_isTapped;
-      if (_isTapped) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
+      _flipped = !_flipped;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _animateCard,
+      onTap: flipCard,
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
           return Transform(
-            transform: Matrix4.rotationY(_animation.value),
             alignment: Alignment.center,
+            transform: Matrix4.rotationY(_animation.value * 3.14),
             child: Container(
-              width: 400,
-              height: 600,
+              width: 300,
+              height: 200,
               decoration: BoxDecoration(
-                color: _isTapped ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white, width: 3),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              alignment: Alignment.center,
-              child: Text(
-                'Simple Card',
-                style: TextStyle(
-                  color: _isTapped ? Colors.black : Colors.white,
-                  fontSize: 24,
-                ),
-              ),
+              child: _flipped
+                  ? Center(
+                      child: Text(
+                        widget.answer,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        widget.question,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
             ),
           );
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

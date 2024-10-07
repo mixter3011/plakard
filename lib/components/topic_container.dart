@@ -7,6 +7,8 @@ class TopicContainer extends StatelessWidget {
   final String mainHeading;
   final String subLine;
   final int numOfCards;
+  final String categoryName;
+  final String topicName;
 
   const TopicContainer({
     super.key,
@@ -14,6 +16,8 @@ class TopicContainer extends StatelessWidget {
     required this.mainHeading,
     required this.subLine,
     required this.numOfCards,
+    required this.categoryName,
+    required this.topicName,
   });
 
   @override
@@ -61,9 +65,14 @@ class TopicContainer extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const FlashCard()));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FlashCard(
+                                  categoryName: categoryName,
+                                  topicName: topicName,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             padding: const EdgeInsets.all(6),
@@ -80,7 +89,8 @@ class TopicContainer extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 0.5),
+                    const SizedBox(
+                        height: 4), // Increased space for better separation
                     Text(
                       subLine,
                       style: GoogleFonts.poppins(

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/cardSelection': (context) => const CardSelection(
               title: '',
-              topic: '',
+              categoryName: '',
             ),
       },
     );

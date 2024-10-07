@@ -1,17 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plakard/components/topic_container.dart';
 import 'package:plakard/components/profile_pic.dart';
 import 'package:plakard/components/drawer.dart';
 
 class CardSelection extends StatefulWidget {
   final String title;
-  final String topic;
+  final String categoryName;
 
   const CardSelection({
     super.key,
     required this.title,
-    required this.topic,
+    required this.categoryName,
   });
 
   @override
@@ -25,7 +25,7 @@ class _CardSelectionState extends State<CardSelection> {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('categories')
-          .doc(widget.topic)
+          .doc(widget.categoryName)
           .collection('topics')
           .get();
 
@@ -122,6 +122,8 @@ class _CardSelectionState extends State<CardSelection> {
                         mainHeading: topic.mainHeading,
                         subLine: topic.subLine,
                         numOfCards: topic.numOfCards,
+                        categoryName: widget.categoryName,
+                        topicName: topic.mainHeading,
                       ),
                       const SizedBox(height: 10),
                     ],

@@ -81,7 +81,7 @@ class CarouselItem extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => CardSelection(
                           title: mainHeading,
-                          topic: mainHeading,
+                          categoryName: mainHeading,
                         ),
                       ),
                     );

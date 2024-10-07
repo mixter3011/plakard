@@ -172,6 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainHeading: name,
                                     subLine: subLine,
                                     numOfCards: numOfTopics,
+                                    categoryName: name,
+                                    topicName: '',
                                   ),
                                   const SizedBox(height: 10),
                                 ],
