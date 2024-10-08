@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class CustomCard extends StatefulWidget {
   final String question;
   final String answer;
+  final VoidCallback onCardFlipped;
 
   const CustomCard({
-    Key? key,
+    super.key,
     required this.question,
     required this.answer,
-  }) : super(key: key);
+    required this.onCardFlipped,
+  });
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -17,9 +19,9 @@ class CustomCard extends StatefulWidget {
 class _CustomCardState extends State<CustomCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<double> _flipAnimation;
 
-  bool _flipped = false; // Track if the card is flipped
+  bool _flipped = false;
 
   @override
   void initState() {
@@ -28,7 +30,8 @@ class _CustomCardState extends State<CustomCard>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+
+    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
   }
 
   void flipCard() {
@@ -36,6 +39,10 @@ class _CustomCardState extends State<CustomCard>
       _controller.reverse();
     } else {
       _controller.forward();
+
+      Future.delayed(const Duration(seconds: 2), () {
+        widget.onCardFlipped();
+      });
     }
     setState(() {
       _flipped = !_flipped;
@@ -47,39 +54,49 @@ class _CustomCardState extends State<CustomCard>
     return GestureDetector(
       onTap: flipCard,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _flipAnimation,
         builder: (context, child) {
           return Transform(
             alignment: Alignment.center,
-            transform: Matrix4.rotationY(_animation.value * 3.14),
+            transform: Matrix4.rotationY(_flipAnimation.value * 3.14),
             child: Container(
-              width: 300,
-              height: 200,
+              width: double.infinity,
+              height: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                color: _flipped ? Colors.white : Colors.black,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: _flipped ? Colors.transparent : Colors.white,
+                  width: 2,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withOpacity(0.3),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: _flipped
-                  ? Center(
-                      child: Text(
-                        widget.answer,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    )
-                  : Center(
-                      child: Text(
+              child: Center(
+                child: _flipped
+                    ? Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(3.14),
+                        child: Text(
+                          widget.answer,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 24, color: Colors.black),
+                        ),
+                      )
+                    : Text(
                         widget.question,
-                        style: const TextStyle(fontSize: 24),
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(fontSize: 24, color: Colors.white),
                       ),
-                    ),
+              ),
             ),
           );
         },
