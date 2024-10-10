@@ -20,7 +20,8 @@ class FlashCard extends StatefulWidget {
 class _FlashCardState extends State<FlashCard> {
   List<Map<String, String>> cardsData = [];
   bool isLoading = true;
-  int currentIndex = 0; // Track the current card being shown
+  int currentIndex = 0;
+  bool isShowingAnswer = false;
 
   @override
   void initState() {
@@ -61,41 +62,52 @@ class _FlashCardState extends State<FlashCard> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error fetching cards: $e');
       setState(() {
         isLoading = false;
       });
     }
   }
 
+  void flipCard() {
+    setState(() {
+      isShowingAnswer = true;
+    });
+
+    Future.delayed(const Duration(seconds: 10), () {
+      goToNextCard();
+    });
+  }
+
   void goToNextCard() {
     if (currentIndex < cardsData.length - 1) {
       setState(() {
         currentIndex++;
+        isShowingAnswer = false;
       });
     } else {
-      // All cards are finished, show the end message
       setState(() {
-        currentIndex = -1; // Use -1 to indicate the end of the cards
+        currentIndex = -1;
+        isShowingAnswer = false;
       });
     }
   }
 
   void restartFlashcards() {
     setState(() {
-      currentIndex = 0; // Restart from the first card
+      currentIndex = 0;
+      isShowingAnswer = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Ensure black background
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           isLoading
               ? const Center(child: CircularProgressIndicator())
-              : currentIndex == -1 // If all cards are done, show the end screen
+              : currentIndex == -1
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -111,11 +123,10 @@ class _FlashCardState extends State<FlashCard> {
                             style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
                               backgroundColor: Colors.white,
-                              padding: const EdgeInsets.all(
-                                  20), // Button background color
+                              padding: const EdgeInsets.all(20),
                             ),
                             child: const Icon(
-                              Icons.replay, // Retry symbol
+                              Icons.replay,
                               color: Colors.black,
                             ),
                           ),
@@ -124,17 +135,15 @@ class _FlashCardState extends State<FlashCard> {
                     )
                   : Center(
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width *
-                            0.9, // Adjust width
-                        height: MediaQuery.of(context).size.height *
-                            0.65, // Adjust height
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.height * 0.65,
                         child: CustomCard(
                           question: cardsData[currentIndex]['question'] ??
                               'No question',
                           answer:
                               cardsData[currentIndex]['answer'] ?? 'No answer',
-                          onCardFlipped:
-                              goToNextCard, // Move to next card after delay
+                          onCardFlipped: flipCard,
+                          isShowingAnswer: isShowingAnswer,
                         ),
                       ),
                     ),

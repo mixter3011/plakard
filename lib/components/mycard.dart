@@ -4,12 +4,14 @@ class CustomCard extends StatefulWidget {
   final String question;
   final String answer;
   final VoidCallback onCardFlipped;
+  final bool isShowingAnswer;
 
   const CustomCard({
     super.key,
     required this.question,
     required this.answer,
     required this.onCardFlipped,
+    required this.isShowingAnswer,
   });
 
   @override
@@ -20,8 +22,6 @@ class _CustomCardState extends State<CustomCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _flipAnimation;
-
-  bool _flipped = false;
 
   @override
   void initState() {
@@ -34,19 +34,22 @@ class _CustomCardState extends State<CustomCard>
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
   }
 
-  void flipCard() {
-    if (_flipped) {
-      _controller.reverse();
-    } else {
-      _controller.forward();
-
-      Future.delayed(const Duration(seconds: 2), () {
-        widget.onCardFlipped();
-      });
+  @override
+  void didUpdateWidget(CustomCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isShowingAnswer != oldWidget.isShowingAnswer) {
+      if (widget.isShowingAnswer) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
     }
-    setState(() {
-      _flipped = !_flipped;
-    });
+  }
+
+  void flipCard() {
+    if (!widget.isShowingAnswer) {
+      widget.onCardFlipped();
+    }
   }
 
   @override
@@ -56,17 +59,20 @@ class _CustomCardState extends State<CustomCard>
       child: AnimatedBuilder(
         animation: _flipAnimation,
         builder: (context, child) {
+          final isFlipped = _flipAnimation.value >= 0.5;
           return Transform(
             alignment: Alignment.center,
-            transform: Matrix4.rotationY(_flipAnimation.value * 3.14),
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateY(_flipAnimation.value * 3.14),
             child: Container(
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
-                color: _flipped ? Colors.white : Colors.black,
+                color: isFlipped ? Colors.white : Colors.black,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
-                  color: _flipped ? Colors.transparent : Colors.white,
+                  color: isFlipped ? Colors.transparent : Colors.white,
                   width: 2,
                 ),
                 boxShadow: [
@@ -79,7 +85,7 @@ class _CustomCardState extends State<CustomCard>
                 ],
               ),
               child: Center(
-                child: _flipped
+                child: isFlipped
                     ? Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.rotationY(3.14),
