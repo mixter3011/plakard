@@ -26,6 +26,30 @@ class MyDrawer extends StatelessWidget {
                   },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: ListTile(
+                  title: const Text("P R O F I L E"),
+                  leading: const Icon(Icons.person),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: ListTile(
+                  title: const Text("M Y  C A R D S"),
+                  leading: const Icon(Icons.credit_card),
+                  onTap: () {
+                    if (ModalRoute.of(context)!.settings.name == '/my-cards') {
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pushNamed(context, '/my-cards');
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:plakard/screens/home_screen.dart';
 import 'package:plakard/screens/card_selection.dart';
+import 'package:plakard/screens/my_card.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
               title: '',
               categoryName: '',
             ),
+        '/my-cards': (context) => const MyCard(),
       },
     );
   }
