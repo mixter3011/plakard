@@ -35,9 +35,15 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   carousel_slider: ^5.0.0
-  google_fonts: ^6.2.1
+  google_fonts: ^4.0.4
   firebase_core: ^3.6.0
   cloud_firestore: ^5.4.4
+  http: ^0.13.5
+  path_provider: ^2.1.4
+  openai_client: ^0.0.7
+  dart_openai: ^3.0.0
+  flutter_dotenv: ^5.1.0
+  top_snackbar_flutter: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -92,6 +98,7 @@ flutter:
     - lib/assets/images/js.png
     - lib/assets/images/python.png
     - lib/assets/images/ts.png
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,7 +1,12 @@
 import 'dart:math';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plakard/components/drawer.dart';
 import 'package:plakard/components/profile_pic.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({super.key});
@@ -12,6 +17,128 @@ class MyCard extends StatefulWidget {
 
 class _MyCardState extends State<MyCard> {
   final TextEditingController _topicController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEnvVariables();
+  }
+
+  Future<void> _loadEnvVariables() async {
+    await dotenv.load();
+    OpenAI.apiKey = dotenv.env['OPENAI_API_KEY']!;
+  }
+
+  Future<void> _generateFlashCards(String topic) async {
+    const promptTemplate =
+        "Generate 20-30 college-level flashcards for the following topic. Format each flashcard as 'Q: [question] A: [answer]': ";
+    final fullPrompt = "$promptTemplate$topic";
+
+    try {
+      final chatCompletion = await OpenAI.instance.chat.create(
+        model: 'gpt-3.5-turbo',
+        messages: [
+          OpenAIChatCompletionChoiceMessageModel(
+            content: fullPrompt,
+            role: OpenAIChatMessageRole.user,
+          ),
+        ],
+      );
+
+      if (chatCompletion.choices.isNotEmpty) {
+        String generatedText = chatCompletion.choices.first.message.content;
+        print("Raw API response:\n$generatedText");
+
+        List<Map<String, String>> questionsAndAnswers =
+            _parseFlashcards(generatedText);
+
+        print("Parsed ${questionsAndAnswers.length} flashcards");
+
+        if (questionsAndAnswers.isNotEmpty) {
+          try {
+            await _saveToFirestore(topic, questionsAndAnswers);
+            showTopSnackBar(
+              Overlay.of(context),
+              const CustomSnackBar.success(
+                message:
+                    'Flash Cards have been created and saved! Check out in the Flashcards section',
+              ),
+            );
+          } catch (e) {
+            print("Error saving to Firestore: $e");
+            showTopSnackBar(
+              Overlay.of(context),
+              CustomSnackBar.error(
+                message: 'Error saving Flash Cards to database: $e',
+              ),
+            );
+          }
+        } else {
+          print("No flashcards were parsed from the API response.");
+          showTopSnackBar(
+            Overlay.of(context),
+            const CustomSnackBar.error(
+              message:
+                  'Error: No flashcards could be parsed from the API response',
+            ),
+          );
+        }
+      } else {
+        print("No content generated from the API.");
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            message: 'Error: No content generated',
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error in _generateFlashCards: $e");
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: 'Error generating Flash Cards: $e',
+        ),
+      );
+    }
+  }
+
+  List<Map<String, String>> _parseFlashcards(String text) {
+    final List<Map<String, String>> flashcards = [];
+    final RegExp questionAnswerPattern =
+        RegExp(r'Q:\s*(.*?)\s*A:\s*(.*)', multiLine: true);
+
+    final matches = questionAnswerPattern.allMatches(text);
+    for (var match in matches) {
+      String question = match.group(1) ?? 'No question found';
+      String answer = match.group(2) ?? 'No answer found';
+      flashcards.add({"question": question, "answer": answer});
+    }
+
+    return flashcards;
+  }
+
+  Future<void> _saveToFirestore(
+      String topic, List<Map<String, String>> flashcards) async {
+    final firestore = FirebaseFirestore.instance;
+
+    // Reference to the 'flashcards' collection
+    final flashcardsCollectionRef = firestore.collection('flashcards');
+
+    // Create a new document for this topic
+    final topicDocRef = flashcardsCollectionRef.doc(topic);
+
+    // Prepare the data to be saved
+    final Map<String, dynamic> topicData = {
+      'createdAt': FieldValue.serverTimestamp(),
+      'cards': flashcards,
+    };
+
+    // Save the data
+    await topicDocRef.set(topicData);
+
+    print("Flashcards saved to Firestore under topic: $topic");
+  }
 
   void _showModalDialog() {
     showDialog(
@@ -59,8 +186,7 @@ class _MyCardState extends State<MyCard> {
             ElevatedButton(
               onPressed: () {
                 String topic = _topicController.text;
-
-                print("Topic entered: $topic");
+                _generateFlashCards(topic);
                 Navigator.of(context).pop();
               },
               child: const Text(
