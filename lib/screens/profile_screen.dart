@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plakard/components/drawer.dart';
 import 'package:plakard/components/profile_pic.dart';
-import 'package:plakard/components/topic_container.dart';
+import 'package:plakard/components/user_topic_container.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -51,7 +51,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // The rest of the build method remains unchanged
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: const MyDrawer(),
@@ -103,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: topics.map((topic) {
                   return Column(
                     children: [
-                      TopicContainer(
+                      UserTopicContainer(
                         imagePath: topic.imagePath,
                         mainHeading: topic.mainHeading,
                         subLine: topic.subLine,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:plakard/screens/flash_card.dart';
+import 'package:plakard/screens/user_flash_card.dart';
 
-class TopicContainer extends StatelessWidget {
+class UserTopicContainer extends StatelessWidget {
   final String imagePath;
   final String mainHeading;
   final String subLine;
@@ -10,7 +10,7 @@ class TopicContainer extends StatelessWidget {
   final String categoryName;
   final String topicName;
 
-  const TopicContainer({
+  const UserTopicContainer({
     super.key,
     required this.imagePath,
     required this.mainHeading,
@@ -67,7 +67,7 @@ class TopicContainer extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => FlashCard(
+                                builder: (context) => UserFlashCard(
                                   categoryName: categoryName,
                                   topicName: topicName,
                                 ),

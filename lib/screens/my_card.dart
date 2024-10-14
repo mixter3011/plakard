@@ -122,19 +122,15 @@ class _MyCardState extends State<MyCard> {
       String topic, List<Map<String, String>> flashcards) async {
     final firestore = FirebaseFirestore.instance;
 
-    // Reference to the 'flashcards' collection
     final flashcardsCollectionRef = firestore.collection('flashcards');
 
-    // Create a new document for this topic
     final topicDocRef = flashcardsCollectionRef.doc(topic);
 
-    // Prepare the data to be saved
     final Map<String, dynamic> topicData = {
       'createdAt': FieldValue.serverTimestamp(),
       'cards': flashcards,
     };
 
-    // Save the data
     await topicDocRef.set(topicData);
 
     print("Flashcards saved to Firestore under topic: $topic");
