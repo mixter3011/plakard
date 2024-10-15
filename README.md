@@ -42,4 +42,4 @@ To install **Plakard** locally, follow these steps:
 ## Improvements Needed
 - [ ] Improve UI
 - [ ] Add dark mode feature
-- [ ] Fix bugs in flashcard generation
+- [ ] Fix bugs  
