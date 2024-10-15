@@ -19,9 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final snapshot =
           await FirebaseFirestore.instance.collection('flashcards').get();
 
-      if (snapshot.docs.isEmpty) {
-        print('No flashcards found in Firestore.');
-      }
+      if (snapshot.docs.isEmpty) {}
 
       for (var doc in snapshot.docs) {
         var data = doc.data();
@@ -40,11 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       }
-
-      print("Total flashcard topics fetched: ${topics.length}");
-    } catch (e) {
-      print('Error fetching flashcard topics: $e');
-    }
+    } catch (e) {}
 
     return topics;
   }

@@ -61,7 +61,6 @@ class _FlashCardState extends State<UserFlashCard> {
       setState(() {
         isLoading = false;
       });
-      print("Error fetching cards: $e");
     }
   }
 
@@ -145,7 +144,7 @@ class _FlashCardState extends State<UserFlashCard> {
                             ),
                           ),
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             'No flashcards available for this topic.',
                             style: TextStyle(color: Colors.white, fontSize: 20),

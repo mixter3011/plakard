@@ -47,12 +47,9 @@ class _MyCardState extends State<MyCard> {
 
       if (chatCompletion.choices.isNotEmpty) {
         String generatedText = chatCompletion.choices.first.message.content;
-        print("Raw API response:\n$generatedText");
 
         List<Map<String, String>> questionsAndAnswers =
             _parseFlashcards(generatedText);
-
-        print("Parsed ${questionsAndAnswers.length} flashcards");
 
         if (questionsAndAnswers.isNotEmpty) {
           try {
@@ -61,11 +58,10 @@ class _MyCardState extends State<MyCard> {
               Overlay.of(context),
               const CustomSnackBar.success(
                 message:
-                    'Flash Cards have been created and saved! Check out in the Flashcards section',
+                    'Flash Cards have been created and saved! Check out in the Profile section',
               ),
             );
           } catch (e) {
-            print("Error saving to Firestore: $e");
             showTopSnackBar(
               Overlay.of(context),
               CustomSnackBar.error(
@@ -74,7 +70,6 @@ class _MyCardState extends State<MyCard> {
             );
           }
         } else {
-          print("No flashcards were parsed from the API response.");
           showTopSnackBar(
             Overlay.of(context),
             const CustomSnackBar.error(
@@ -84,7 +79,6 @@ class _MyCardState extends State<MyCard> {
           );
         }
       } else {
-        print("No content generated from the API.");
         showTopSnackBar(
           Overlay.of(context),
           const CustomSnackBar.error(
@@ -93,7 +87,6 @@ class _MyCardState extends State<MyCard> {
         );
       }
     } catch (e) {
-      print("Error in _generateFlashCards: $e");
       showTopSnackBar(
         Overlay.of(context),
         CustomSnackBar.error(
@@ -132,8 +125,6 @@ class _MyCardState extends State<MyCard> {
     };
 
     await topicDocRef.set(topicData);
-
-    print("Flashcards saved to Firestore under topic: $topic");
   }
 
   void _showModalDialog() {

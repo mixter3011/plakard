@@ -29,9 +29,7 @@ class _CardSelectionState extends State<CardSelection> {
           .collection('topics')
           .get();
 
-      if (snapshot.docs.isEmpty) {
-        print('No topics found in Firestore.');
-      }
+      if (snapshot.docs.isEmpty) {}
 
       for (var doc in snapshot.docs) {
         var data = doc.data();
@@ -47,15 +45,9 @@ class _CardSelectionState extends State<CardSelection> {
               data['number'],
             ),
           );
-        } else {
-          print("Document missing some required fields: ${doc.id}");
-        }
+        } else {}
       }
-
-      print("Total topics fetched: ${topics.length}");
-    } catch (e) {
-      print('Error fetching topics: $e');
-    }
+    } catch (e) {}
 
     return topics;
   }
